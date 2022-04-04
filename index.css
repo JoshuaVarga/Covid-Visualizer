@@ -1,0 +1,10 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    font-weight: bold;
+    background-color: rgb(30, 30, 30);
+}
+
+.graph-container {
+    background-color: aquamarine;
+}

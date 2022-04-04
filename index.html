@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.8/d3.min.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <div class="page-container">
+        <h1>COVID-19 DATA</h1>
+        <div class="graph-container"></div>
+    </div>
+
+    <script src="/d3Chloropleth.js"></script>
+
+    <script>
+        let chart;
+        d3.queue()
+            .defer(d3.json, "/geoData.json")
+            .defer(d3.csv, "/covidData.csv")
+            .await(function(error, geoData, covidData) {
+                if (error) {
+                    console.error('Failed to load one or more files: ' + error);
+                } else {
+                    chart = new Chart()
+                        .svgHeight(window.innerHeight - 30)
+                        .svgWidth(window.innerWidth - 30)
+                        .container('#graph-container')
+                        .data([geoData, covidData])
+                        .render();
+                }
+            });
+    </script>
+</body>
+
+</html>
