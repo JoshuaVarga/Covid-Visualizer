@@ -12,21 +12,25 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/index.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.8/d3.min.js"></script>
+    <script src="/d3.min.js"></script>
 </head>
 
 <body>
     <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-    <div class="page-container">
-        <h1>COVID-19 DATA</h1>
-        <div class="graph-container"></div>
+    <div id="page-container">
+        <div id="svg-container"></div>
+        <div id="sidebar">
+            <button id="collapse">TEST</button>
+        </div>
     </div>
 
-    <script src="/d3Chloropleth.js"></script>
+    <script src="/d3Choropleth.js"></script>
 
     <script>
+        d3.selectAll("button").on("click", handleButtons);
+
         let chart;
         d3.queue()
             .defer(d3.json, "/geoData.json")
@@ -36,14 +40,23 @@
                     console.error('Failed to load one or more files: ' + error);
                 } else {
                     chart = new Chart()
-                        .svgHeight(window.innerHeight - 30)
-                        .svgWidth(window.innerWidth - 30)
-                        .container('#graph-container')
+                        .svgHeight(window.innerHeight)
+                        .svgWidth(window.innerWidth)
+                        .container('#svg-container')
                         .data([geoData, covidData])
                         .render();
                 }
             });
+
+        function handleButtons() {
+            let button = d3.select(this);
+            console.log(button);
+            if (this.id === "collapse") {
+                this.style.display = "none";
+            };
+        }
     </script>
+
 </body>
 
 </html>
