@@ -45,13 +45,7 @@ d3.queue()
             });
 
             update();
-            d3.select('.svg-content').call(zoom);
-
-            var chart = d3.select('g.chart');
-            var countryAndStatistic = chart.append('text');
-
-            countryAndStatistic.attr('class', 'text')
-                .text()
+            var svg = d3.selectAll('.svg-content').call(zoom);
 
             function update() {
                 let column = [];

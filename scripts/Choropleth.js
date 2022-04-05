@@ -82,7 +82,8 @@ class Choropleth {
             chartHeight,
             projection,
             colorScheme,
-            mapper
+            mapper,
+            calc
         } = this.getState();
 
         chart
@@ -92,8 +93,6 @@ class Choropleth {
                 data: data,
                 exitTransition: function(selection) {
                     selection
-                        .attr('width', chartWidth)
-                        .attr('height', chartHeight)
                         .attr('d', d3.geoPath()
                             .projection(projection))
                         .transition()
@@ -102,7 +101,28 @@ class Choropleth {
                         .delay(500)
                         .attr('fill', function(d) { return colorScheme(mapper.get(d.properties.name)) })
                 }
-            });
+            })
+            .attr('width', chartWidth)
+            .attr('width', chartHeight);
+
+        chart._add({
+                tag: 'rect',
+                className: 'legend',
+                exitTransition: function(selection) {
+                    selection
+                        .transition()
+                        .ease(d3.easePoly)
+                        .duration(2000)
+                        .delay(500)
+                        .attr('fill', 'url(#gradient)')
+                }
+            })
+            .attr('width', 400)
+            .attr('height', 20)
+            .attr(
+                'transform',
+                'translate(' + (calc.chartLeftMargin + 50) + ',' + (chartHeight - 100 - calc.chartTopMargin) + ')'
+            );
     }
 
     drawSvgAndWrappers() {
@@ -114,9 +134,11 @@ class Choropleth {
             chartWidth,
             chartHeight,
             data,
-            colorScheme,
-            mapper
+            colorScheme
         } = this.getState();
+
+        d3.selectAll('defs').remove();
+        d3.selectAll('.axis').remove();
 
         const svg = d3Container
             ._add({
@@ -156,7 +178,56 @@ class Choropleth {
                         .delay(500)
                         .remove();
                 }
-            });
+            })
+            .attr('width', chartWidth)
+            .attr('width', chartHeight);
+
+        var gradient = svg.append('defs').append('g')
+            .append('linearGradient')
+            .attr('id', 'gradient')
+            .attr('x1', 0)
+            .attr('x2', 1)
+            .attr('y1', 0)
+            .attr('y2', 0);
+
+
+        for (let color in colorScheme.range()) {
+            gradient.append('stop')
+                .attr('offset', parseInt(((color / (colorScheme.range().length - 1) * 100))) + "%")
+                .attr('stop-color', colorScheme.range()[color]);
+        }
+
+        chart._add({
+                tag: 'rect',
+                className: 'legend',
+                exitTransition: function(selection) {
+                    selection.exit()
+                        .transition()
+                        .ease(d3.easePoly)
+                        .duration(2000)
+                        .delay(500)
+                        .attr('fill', '#ffffff')
+                        .remove();
+                }
+            })
+            .attr('width', 400)
+            .attr('height', 20)
+            .attr(
+                'transform',
+                'translate(' + (calc.chartLeftMargin + 50) + ',' + (chartHeight - 100 - calc.chartTopMargin) + ')'
+            );
+
+        var scale = d3.scaleOrdinal()
+            .domain(colorScheme.domain())
+            .range([0, 400]);
+
+        svg.append('g')
+            .attr('class', 'axis')
+            .attr(
+                'transform',
+                'translate(' + (calc.chartLeftMargin + 55) + ',' + (chartHeight - 75 - calc.chartTopMargin) + ')'
+            )
+            .call(d3.axisBottom(scale));
 
         this.setState({ chart, svg, projection });
     }
